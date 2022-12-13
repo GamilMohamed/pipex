@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/12 23:25:12 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 00:00:36 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,16 +15,16 @@
 void	init(t_args *args, char **av, int ac)
 {
 	int	i;
-
-	args->infile = av[1];
+	args->nbcmds = 0;
+	args->infile = open(av[1], O_RDWR);
 	i = -1;
-	ft_printf("i=%i, ac=%i", i, ac);
 	while (++i < ac - 3)
 	{
+		args->nbcmds++;
 		args->cmds[i] = av[i + 2];
 	}
 	args->cmds[i] = NULL;
-	args->outfile = av[ac - 1];
+	args->outfile = open(av[ac - 1], O_RDWR | O_TRUNC | O_CREAT, 0666);
 }
 
 int	freestruct(t_args *args)

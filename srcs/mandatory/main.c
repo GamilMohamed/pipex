@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/13 00:24:48 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 00:40:45 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,97 +41,14 @@ int	ft_getenv(int ac, char **envp, t_args *args)
 	return (1);
 }
 
-void	exec(t_args *args, int boolean, int fathorchild)
-{
-	char	*temp;
-	char	**tab;
-	int		i;
-
-	i = -1;
-	if (boolean)
-		ft_printf("%Gdoesnt start with backslash%0\n");
-	while (boolean && args->env[++i])
-	{
-		tab = ft_split(args->cmds[fathorchild], ' ');
-		temp = ft_slash(args->env[i], tab[0]);
-		execve(temp, tab, NULL);
-		// ft_printf("access=%i\n", access(temp, F_OK));
-		ft_freestr(1, 1, temp, tab);
-	}
-	if (!boolean)
-	{
-		ft_printf("%Mstart with backslash%0\n");
-		tab = ft_split(args->cmds[fathorchild], ' ');
-		execve(tab[0], tab, NULL);
-		perror("slashback");
-		ft_freetab((void **)tab);
-	}
-	// errno vaut 2 si tout est faux
-}
-
-void	forking(t_args *args)
-{
-	pid_t	pid;
-	pid_t	newpid;
-
-	pipe(args->fd);
-	pid = fork();
-	if (pid == -1) // gosse
-	{
-		ft_printf("failed\n");
-		exit(1);
-	}
-	if (pid == 0) // gosse
-	{
-		ft_printf("%B\t\tGOSSE\t\t\n");
-		ft_printf("PID:%d\n", getpid());
-		ft_printf("%RDARON PID:%d%0\n", getppid());
-		dup2(args->fd[1], STDOUT_FILENO);
-		close(args->fd[0]);
-		close(args->fd[1]);
-		if (args->cmds[0][0] != '/')
-			exec(args, 1, 0);
-		else
-			exec(args, 0, 0);
-	}
-	newpid = fork();
-	if (newpid == -1) // gosse
-	{
-		ft_printf("failed\n");
-		exit(1);
-	}
-	if (newpid == 0) // daron
-	{
-		ft_printf("PID:%d\n%0", getpid());
-		dup2(args->fd[0], STDIN_FILENO);
-		close(args->fd[0]);
-		close(args->fd[1]);
-		if (args->cmds[1][0] != '/')
-			exec(args, 1, 1);
-		else
-			exec(args, 0, 1);
-	}
-	close(args->fd[0]);
-	close(args->fd[1]);
-	waitpid(pid, NULL, 0);
-	waitpid(newpid, NULL, 0);
-}
-
-// void forking(t_args *args)
-// {
-
-// }
-
 void	checkcmd(t_args *args)
 {
 	char	**tab;
 	char	*temp;
 	int		i;
 	int		j;
-	int		ok;
 
 	i = -1;
-	ok = 1;
 	while (++i < args->nbcmds)
 	{
 		if (args->cmds[i][0] == '/')
@@ -139,8 +56,8 @@ void	checkcmd(t_args *args)
 			tab = ft_split(args->cmds[i], ' ');
 			if (access(tab[0], F_OK) != 0)
 			{
-				ft_printf("bash: %s: No such file or directory\n",
-							tab[0]);
+				// ft_printf("bash: %s: No such file or directory\n",
+				// tab[0]);
 				ft_freetab((void **)tab);
 				freestruct(args);
 				exit(1);
@@ -171,34 +88,112 @@ void	checkcmd(t_args *args)
 			}
 		}
 	}
-	// if (args->cmdss[1][0] != '/')
-	// {
-	// 	exec(args, 1, 1);
-	// }
-	// else
-	// {
-	// 	while (access() != -1)
-	// 	{
-	// 		tab = ft_split(args->cmds[i], ' ');
-	// 		temp = ft_slash(args->env[i], tab[0]);
-	// 	}
-	// 	exec(args, 0, 1);
-	// }
+}
+
+void	exec(t_args *args, int boolean, int fathorchild)
+{
+	char	*temp;
+	char	**tab;
+	int		i;
+
+	i = -1;
+	// ft_printf("cmd=%s\n", args->cmds[fathorchild - 1]);
+	while (boolean && args->env[++i])
+	{
+		tab = ft_split(args->cmds[fathorchild], ' ');
+		temp = ft_slash(args->env[i], tab[0]);
+		execve(temp, tab, NULL);
+		ft_freestr(1, 1, temp, tab);
+	}
+	if (!boolean)
+	{
+		tab = ft_split(args->cmds[fathorchild], ' ');
+		execve(tab[0], tab, NULL);
+		perror("slashback");
+		ft_freetab((void **)tab);
+	}
+}
+
+void	forking(t_args *args, int index)
+{
+	// ft_printf("args->prev_pipes=%i\n", args->prev_pipes);
+	// ft_printf("args->fd[0]:%i, args->fd[1]:%i\n", args->fd[0], args->fd[1]);
+	// ft_printf("index=%i\n", index);
+	if (index == 0) // cat
+	{
+		close(args->fd[0]);
+		ft_printf("START\n");
+		dup2(args->infile, STDIN_FILENO);
+		dup2(args->fd[1], STDOUT_FILENO);
+		close(args->infile);
+		close(args->fd[1]);
+		if (args->cmds[index][0] != '/')
+			exec(args, 1, index);
+		else
+			exec(args, 0, index);
+	}
+	else if (index == args->nbcmds - 1) // wc -l
+	{
+		ft_printf("END\n");
+		dup2(args->prev_pipes, STDIN_FILENO);
+		dup2(args->outfile, STDOUT_FILENO);
+		close(args->outfile);
+		close(args->prev_pipes);
+		close(args->fd[0]);
+		close(args->fd[1]);
+		if (args->cmds[index][0] != '/')
+			exec(args, 1, index);
+		else
+			exec(args, 0, index);
+	}
+	else
+	{
+		ft_printf("cjarp\n");
+		dup2(args->prev_pipes, STDIN_FILENO);
+		dup2(args->fd[1], STDOUT_FILENO);
+		close(args->prev_pipes);
+		// close(args->fd[0]);
+		close(args->fd[1]);
+		if (args->cmds[index][0] != '/')
+			exec(args, 1, index);
+		else
+			exec(args, 0, index);
+	}
 }
 
 int	main(int ac, char *av[], char *envp[])
 {
 	t_args	*args;
+	int		j;
+	int		i;
+	int		r;
 
 	args = ft_calloc(sizeof(t_args), 1);
 	if (!args)
 		exit(1);
-	args->nbcmds = ac - 3;
+	args->prev_pipes = -1;
 	if (!ft_getenv(ac, envp, args))
 		return (1);
 	init(args, av, ac);
 	checkcmd(args);
-	ft_printstruct(args);
-	forking(args);
+	ft_printstruct(args, ac);
+	for (i = 0; i < args->nbcmds; i++)
+	{
+		pipe(args->fd);
+		args->pid[i] = fork();
+		if (args->pid[i] == 0)
+			forking(args, i);
+		else
+		{
+			close(args->fd[1]);
+			if (args->prev_pipes != -1)
+				close(args->prev_pipes);
+			args->prev_pipes = args->fd[0];
+		}
+	}
+	j = -1;
+	while (++j < i)
+		waitpid(args->pid[j], &r, 0);
+	//waitpid
 	freestruct(args);
 }
