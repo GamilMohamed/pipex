@@ -6,19 +6,25 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/09 20:40:08 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/12 23:25:12 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-void	init(t_args *args, char **av)
+void	init(t_args *args, char **av, int ac)
 {
+	int	i;
+
 	args->infile = av[1];
-	args->cmds[0] = av[2];
-	args->cmds[1] = av[3];
-	args->cmds[2] = NULL;
-	args->outfile = av[4];
+	i = -1;
+	ft_printf("i=%i, ac=%i", i, ac);
+	while (++i < ac - 3)
+	{
+		args->cmds[i] = av[i + 2];
+	}
+	args->cmds[i] = NULL;
+	args->outfile = av[ac - 1];
 }
 
 int	freestruct(t_args *args)

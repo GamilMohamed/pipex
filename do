@@ -1,1 +1,1 @@
-clear; make; make clean; valgrind --track-origins=yes -s --leak-check=full --show-leak-kinds=all ./pipex in "ls -R -a" "wc -l" out
+clear; make; make clean; valgrind --track-origins=yes -s --leak-check=full --show-leak-kinds=all ./pipex in "ls -R" "grep a" "/usr/bin/wc -l" out
