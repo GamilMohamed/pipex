@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mgamil <mgamil@42.student.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/14 00:40:45 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 03:52:46 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ void	exec(t_args *args, int boolean, int fathorchild)
 	int		i;
 
 	i = -1;
-	// ft_printf("cmd=%s\n", args->cmds[fathorchild - 1]);
 	while (boolean && args->env[++i])
 	{
 		tab = ft_split(args->cmds[fathorchild], ' ');
@@ -116,57 +115,58 @@ void	exec(t_args *args, int boolean, int fathorchild)
 
 void	forking(t_args *args, int index)
 {
-	// ft_printf("args->prev_pipes=%i\n", args->prev_pipes);
-	// ft_printf("args->fd[0]:%i, args->fd[1]:%i\n", args->fd[0], args->fd[1]);
-	// ft_printf("index=%i\n", index);
+	if (index == 0 || index == args->nbcmds - 1)
+		close(args->fd[0]);
 	if (index == 0) // cat
 	{
-		close(args->fd[0]);
-		ft_printf("START\n");
 		dup2(args->infile, STDIN_FILENO);
-		dup2(args->fd[1], STDOUT_FILENO);
 		close(args->infile);
-		close(args->fd[1]);
-		if (args->cmds[index][0] != '/')
-			exec(args, 1, index);
-		else
-			exec(args, 0, index);
 	}
-	else if (index == args->nbcmds - 1) // wc -l
+	else if (index == args->nbcmds - 1)
 	{
-		ft_printf("END\n");
-		dup2(args->prev_pipes, STDIN_FILENO);
 		dup2(args->outfile, STDOUT_FILENO);
 		close(args->outfile);
-		close(args->prev_pipes);
-		close(args->fd[0]);
-		close(args->fd[1]);
-		if (args->cmds[index][0] != '/')
-			exec(args, 1, index);
-		else
-			exec(args, 0, index);
 	}
-	else
-	{
-		ft_printf("cjarp\n");
-		dup2(args->prev_pipes, STDIN_FILENO);
+	if (index != args->nbcmds - 1)
 		dup2(args->fd[1], STDOUT_FILENO);
+	if (index != 0)
+	{
+		dup2(args->prev_pipes, STDIN_FILENO);
 		close(args->prev_pipes);
-		// close(args->fd[0]);
-		close(args->fd[1]);
-		if (args->cmds[index][0] != '/')
-			exec(args, 1, index);
+	}
+}
+
+void	preforking(t_args *args)
+{
+	int	i;
+
+	i = -1;
+	while (++i < args->nbcmds)
+	{
+		pipe(args->fd);
+		args->pid[i] = fork();
+		if (args->pid[i] == 0)
+		{
+			forking(args, i);
+			close(args->fd[1]);
+			if (args->cmds[i][0] == '/')
+				exec(args, 0, i);
+			else
+				exec(args, 1, i);
+		}
 		else
-			exec(args, 0, index);
+		{
+			close(args->fd[1]);
+			if (args->prev_pipes != -1)
+				close(args->prev_pipes);
+			args->prev_pipes = args->fd[0];
+		}
 	}
 }
 
 int	main(int ac, char *av[], char *envp[])
 {
 	t_args	*args;
-	int		j;
-	int		i;
-	int		r;
 
 	args = ft_calloc(sizeof(t_args), 1);
 	if (!args)
@@ -177,23 +177,7 @@ int	main(int ac, char *av[], char *envp[])
 	init(args, av, ac);
 	checkcmd(args);
 	ft_printstruct(args, ac);
-	for (i = 0; i < args->nbcmds; i++)
-	{
-		pipe(args->fd);
-		args->pid[i] = fork();
-		if (args->pid[i] == 0)
-			forking(args, i);
-		else
-		{
-			close(args->fd[1]);
-			if (args->prev_pipes != -1)
-				close(args->prev_pipes);
-			args->prev_pipes = args->fd[0];
-		}
-	}
-	j = -1;
-	while (++j < i)
-		waitpid(args->pid[j], &r, 0);
-	//waitpid
+	preforking(args);
+	wait_pids(args);
 	freestruct(args);
 }

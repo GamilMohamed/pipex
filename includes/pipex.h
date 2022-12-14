@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mgamil <mgamil@42.student.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/13 22:38:20 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 03:00:24 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void		ft_printstruct(t_args *args, int ac);
 void		init(t_args *args, char **av, int ac);
 int			freestruct(t_args *args);
 void		ft_freestr(int n, int ntab, ...);
+void		wait_pids(t_args *args);
 /*	UTILS.C				*/
 char		*ft_slash(char *path, char *cmd);
 

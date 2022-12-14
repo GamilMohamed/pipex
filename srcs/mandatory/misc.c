@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   misc.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mgamil <mgamil@42.student.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/14 00:00:36 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 03:00:07 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,13 @@ void	ft_freestr(int n, int ntab, ...)
 	while (++i < ntab)
 		ft_freetab((void **)va_arg(str, void **));
 	va_end(str);
+}
+
+void	wait_pids(t_args *args)
+{
+	int	i;
+
+	i = -1;
+	while (++i < args->nbcmds)
+		waitpid(args->pid[i], &i, 0);
 }
