@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mgamil <mgamil@42.student.fr>              +#+  +:+       +#+        */
+/*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/14 03:52:46 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/14 23:08:07 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,56 +41,21 @@ int	ft_getenv(int ac, char **envp, t_args *args)
 	return (1);
 }
 
-void	checkcmd(t_args *args)
+void	checkaccess(char *cmd)
 {
-	char	**tab;
-	char	*temp;
-	int		i;
-	int		j;
-
-	i = -1;
-	while (++i < args->nbcmds)
+	if (access(cmd, F_OK) != 0)
 	{
-		if (args->cmds[i][0] == '/')
-		{
-			tab = ft_split(args->cmds[i], ' ');
-			if (access(tab[0], F_OK) != 0)
-			{
-				// ft_printf("bash: %s: No such file or directory\n",
-				// tab[0]);
-				ft_freetab((void **)tab);
-				freestruct(args);
-				exit(1);
-			}
-			ft_freetab((void **)tab);
-		}
-		else
-		{
-			j = 0;
-			while (args->env[j])
-			{
-				tab = ft_split(args->cmds[i], ' ');
-				temp = ft_slash(args->env[j], tab[0]);
-				access(temp, F_OK);
-				if (access(temp, F_OK) != 0 && args->env[j + 1] == NULL)
-				{
-					ft_freestr(1, 1, temp, tab);
-					freestruct(args);
-					exit(1);
-				}
-				else if (access(temp, F_OK) == 0)
-				{
-					ft_freestr(1, 1, temp, tab);
-					break ;
-				}
-				ft_freestr(1, 1, temp, tab);
-				j++;
-			}
-		}
+		ft_printf("bash: %s: Noa such file or directory\n", cmd);
+		return ;
+	}
+	if (access(cmd, X_OK) != 0)
+	{
+		ft_printf("bash: %s: Permission denied\n", cmd);
+		return ;
 	}
 }
 
-void	exec(t_args *args, int boolean, int fathorchild)
+void	exec(t_args *args, int boolean, int index)
 {
 	char	*temp;
 	char	**tab;
@@ -99,14 +64,17 @@ void	exec(t_args *args, int boolean, int fathorchild)
 	i = -1;
 	while (boolean && args->env[++i])
 	{
-		tab = ft_split(args->cmds[fathorchild], ' ');
+		tab = ft_split(args->cmds[index], ' ');
 		temp = ft_slash(args->env[i], tab[0]);
+		if (args->env[i + 1] == NULL)
+			checkaccess(tab[0]);
 		execve(temp, tab, NULL);
 		ft_freestr(1, 1, temp, tab);
 	}
 	if (!boolean)
 	{
-		tab = ft_split(args->cmds[fathorchild], ' ');
+		tab = ft_split(args->cmds[index], ' ');
+		checkaccess(tab[0]);
 		execve(tab[0], tab, NULL);
 		perror("slashback");
 		ft_freetab((void **)tab);
@@ -117,7 +85,7 @@ void	forking(t_args *args, int index)
 {
 	if (index == 0 || index == args->nbcmds - 1)
 		close(args->fd[0]);
-	if (index == 0) // cat
+	if (index == 0)
 	{
 		dup2(args->infile, STDIN_FILENO);
 		close(args->infile);
@@ -149,6 +117,7 @@ void	preforking(t_args *args)
 		{
 			forking(args, i);
 			close(args->fd[1]);
+			ft_printf("lol\n");
 			if (args->cmds[i][0] == '/')
 				exec(args, 0, i);
 			else
@@ -175,9 +144,14 @@ int	main(int ac, char *av[], char *envp[])
 	if (!ft_getenv(ac, envp, args))
 		return (1);
 	init(args, av, ac);
-	checkcmd(args);
+	// checkcmd(args);
 	ft_printstruct(args, ac);
 	preforking(args);
 	wait_pids(args);
+	// while (wait(NULL) > 0)
+		// ;
+	close(args->outfile);
+	close(args->fd[0]);
+	close(args->infile);
 	freestruct(args);
 }
