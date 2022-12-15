@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/14 22:56:01 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/15 21:45:39 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,11 @@
 
 typedef struct s_args
 {
-	int		infile;
+	int		ac;
+	char	**av;
+	int		in;
 	char	**cmds;
-	int		outfile;
+	int		out;
 	char	**env;
 	int		nbcmds;
 	int		prev_pipes;
@@ -40,5 +42,10 @@ void		ft_freestr(int n, int ntab, ...);
 void		wait_pids(t_args *args);
 /*	UTILS.C				*/
 char		*ft_slash(char *path, char *cmd);
+void		dupnclose(int fd, int std);
+void	ft_error_exit(char *s, int error, t_args *args);
+void	checkaccess(char *cmd);
+
+
 
 #endif

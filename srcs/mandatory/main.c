@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 18:43:29 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/15 21:47:11 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,21 +38,7 @@ int	ft_getenv(int ac, char **envp, t_args *args)
 		free(args);
 		exit(1);
 	}
-	return (1);
-}
-
-void	checkaccess(char *cmd)
-{
-	if (access(cmd, F_OK) != 0)
-	{
-		ft_printf("bash: %s: Noa such file or directory\n", cmd);
-		return ;
-	}
-	if (access(cmd, X_OK) != 0)
-	{
-		ft_printf("bash: %s: Permission denied\n", cmd);
-		return ;
-	}
+	return (0);
 }
 
 void	exec(t_args *args, int boolean, int index)
@@ -68,9 +54,7 @@ void	exec(t_args *args, int boolean, int index)
 		temp = ft_slash(args->env[i], tab[0]);
 		if (args->env[i + 1] == NULL)
 			checkaccess(tab[0]);
-		// ft_printf("(%d)about to exec\n", index);
 		execve(temp, tab, NULL);
-		// ft_printf("(%d)failed exec\n", index);
 		free(temp);
 	}
 	if (!boolean)
@@ -82,65 +66,38 @@ void	exec(t_args *args, int boolean, int index)
 	ft_freetab((void **)tab);
 }
 
-// void	forking(t_args *args, int index, char **av)
-// {
-// 	(void)av;
-// 	// if (index == 0 || index == args->nbcmds - 1)
-// 	if (index == 0)
-// 	{
-// 		// args->infile = open(av[index], O_RDONLY);
-// 		// ft_printf("(%d)INFILE EEEE%i\n", index, args->infile);
-// 		dup2(args->infile, STDIN_FILENO);
-// 		close(args->infile);
-// 	}
-// 	else if (index == args->nbcmds - 1)
-// 	{
-// 		// args->outfile = open(av[args->nbcmds - 1], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-// 		// ft_printf("(%d)OUTFILE EEE %i\n", index, args->outfile);
-// 		dup2(args->outfile, STDOUT_FILENO);
-// 		close(args->outfile);
-// 	}
-// 	if (index != args->nbcmds - 1)
-// 		dup2(args->fd[1], STDOUT_FILENO);
-// 	if (index != 0)
-// 	{
-// 		dup2(args->prev_pipes, STDIN_FILENO);
-// 		close(args->prev_pipes);
-// 	}
-// 	close(args->fd[0]);
-// }
-
 void	forking(t_args *args, int index)
 {
-	if (index == 0) // cat
+	if (index == 0)
 	{
-		close(args->fd[0]);
-		dup2(args->infile, STDIN_FILENO);
+		args->in = open(args->av[1], O_RDONLY);
+		if (args->in == 0)
+			ft_error_exit(args->av[1], 1, args);
+		if (args->in == -1)
+			ft_error_exit(args->av[1], 0, args);
+		dupnclose(args->in, STDIN_FILENO);
+	}
+	else if (index == args->nbcmds - 1)
+	{
+		args->out = open(args->av[args->ac - 1], O_WRONLY
+				| O_TRUNC | O_CREAT, 0666);
+		if (args->out == 0)
+			ft_error_exit(args->av[args->ac - 1], 1, args);
+		if (args->out == -1)
+			ft_error_exit(args->av[args->ac - 1], 0, args);
+		dupnclose(args->out, STDOUT_FILENO);
+	}
+	if (index != args->nbcmds - 1)
 		dup2(args->fd[1], STDOUT_FILENO);
-		close(args->infile);
-	}
-	else if (index == args->nbcmds - 1) // wc -l
-	{
-		dup2(args->prev_pipes, STDIN_FILENO);
-		dup2(args->outfile, STDOUT_FILENO);
-		close(args->outfile);
-		close(args->prev_pipes);
-		close(args->fd[0]);
-	}
-	else
-	{
-		dup2(args->prev_pipes, STDIN_FILENO);
-		dup2(args->fd[1], STDOUT_FILENO);
-		close(args->prev_pipes);
-		close(args->fd[0]);
-	}
+	if (index != 0)
+		dupnclose(args->prev_pipes, STDIN_FILENO);
 }
-void	preforking(t_args *args, char **av)
+
+void	preforking(t_args *args)
 {
 	int	i;
 
 	i = -1;
-	(void)av;
 	while (++i < args->nbcmds)
 	{
 		pipe(args->fd);
@@ -149,6 +106,7 @@ void	preforking(t_args *args, char **av)
 		{
 			forking(args, i);
 			close(args->fd[1]);
+			close(args->fd[0]);
 			if (ft_strchr(args->cmds[i], '/'))
 				exec(args, 0, i);
 			else
@@ -169,22 +127,22 @@ int	main(int ac, char *av[], char *envp[])
 	t_args	*args;
 
 	if (!envp[0])
-		return (1);
+		return (0);
 	args = ft_calloc(sizeof(t_args), 1);
 	if (!args)
-		exit(1);
+		exit(0);
 	args->prev_pipes = -1;
-	if (!ft_getenv(ac, envp, args))
-		return (1);
+	args->av = av;
+	args->ac = ac;
+	ft_getenv(ac, envp, args);
 	init(args, av, ac);
-	// checkcmd(args);
-	preforking(args, av);
+	preforking(args);
 	wait_pids(args);
-	// ft_printstruct(args, ac);
-	// while (wait(NULL) > 0)
-	// ;
-	close(args->outfile);
+	close(args->out);
 	close(args->fd[0]);
-	close(args->infile);
+	close(args->in);
 	freestruct(args);
+	return (1);
 }
+
+// ft_printstruct(args, ac);
