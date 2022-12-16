@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 21:45:39 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/15 23:22:27 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,7 @@ void		wait_pids(t_args *args);
 /*	UTILS.C				*/
 char		*ft_slash(char *path, char *cmd);
 void		dupnclose(int fd, int std);
-void	ft_error_exit(char *s, int error, t_args *args);
-void	checkaccess(char *cmd);
-
-
+void		ft_error_exit(char *s, int error, t_args *args, int last);
+void		checkaccess(char *cmd, int boolean);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 15:11:04 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 22:54:53 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/15 22:50:40 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	ft_printstruct(t_args *args, int ac)
 	while (args->env[++i])
 		ft_printf("%g%s%0:", args->env[i]);
 	ft_printf("\n");
-	ft_printf("infile=%y\t\t%i%0\t[%i]\n", args->av[1], 1);
+	ft_printf("infile=%y\t\t%s%0\t[%i]\n", args->av[1], 1);
 	i = -1;
 	while (args->cmds[++i])
 	{
@@ -35,6 +35,6 @@ void	ft_printstruct(t_args *args, int ac)
 			ft_printf("flags[%i]=%m\t%s%0\t\n", j, cmd[j]);
 		ft_freetab((void **)cmd);
 	}
-	ft_printf("outfile=%y\t%i%0\t[%i]\n", args->av[ac -1], ac -1);
+	ft_printf("outfile=%y\t%s%0\t[%i]\n", args->av[ac -1], ac -1);
 	ft_printf("nbcmds=\t\t%r%i%0\n", args->nbcmds);
 }
