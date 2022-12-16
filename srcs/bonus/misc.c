@@ -6,23 +6,54 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 21:38:56 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 22:39:43 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+int	get_here_doc(t_args *args)
+{
+	char	*s;
+	int		fd;
+
+	s = NULL;
+	fd = open("tmpipex.txt", O_RDWR | O_CREAT, 0644);
+	ft_printf("fd la la la =%i\n", fd);
+	while (1)
+	{
+		s = get_next_line(0, 0);
+		if (!s || !ft_strcmp(s, args->delimiter))
+			break ;
+		ft_putstr_fd(s, fd);
+		free(s);
+	}
+	free(s);
+	get_next_line(0, 1);
+	// close(fd);
+	args->in = fd;
+	return (0);
+}
 void	init(t_args *args, char **av, int ac)
 {
 	int	i;
 
 	args->nbcmds = 0;
+	args->prev_pipes = -1;
+	args->av = av;
+	args->ac = ac;
+	args->heredoc = 0000100;
 	i = -1;
-	while (++i < ac - 3)
+	if (!ft_strcmp(av[1], "here_doc"))
 	{
-		args->nbcmds++;
-		args->cmds[i] = av[i + 2];
+		args->delimiter = ft_strjoin(av[2], "\n");
+		args->heredoc = 00002000;
+		i++;
+		get_here_doc(args);
 	}
+	free(args->delimiter);
+	while (++i < ac - 3)
+		args->cmds[args->nbcmds++] = av[i + 2];
 	args->cmds[i] = NULL;
 }
 

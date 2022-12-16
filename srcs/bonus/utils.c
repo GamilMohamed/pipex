@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 20:32:41 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 23:03:34 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 05:41:06 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,31 +44,34 @@ void	dupnclose(int fd, int std)
 
 void	checkaccess(char *cmd, int boolean)
 {
+	ft_printf("cmd=%s\n", cmd);
 	if (access(cmd, F_OK) != 0 && boolean == 1)
 	{
 		ft_printf("%s: No such command\n", cmd);
 		return ;
 	}
-	if (access(cmd, F_OK) != 0 && boolean == 0)
+	else if (access(cmd, F_OK) != 0 && boolean == 0)
 	{
 		ft_printf("bash: %s: No such file or directory\n", cmd);
 		return ;
 	}
-	if (access(cmd, X_OK) != 0)
+	else
 	{
-		ft_printf("ici cmd=%s\n", cmd);
-		ft_printf("bash: %s: Permission denied\n", cmd);
-		exit (1);
-		return ;
+		perror("bashs");
 	}
 }
 
-void	ft_error_exit(char *s, int error, t_args *args)
+void	ft_error_exit(char *s, int error, t_args *args, int last)
 {
-	if (error == 0)
+	(void)error;
+	(void)s;
+	// perror("bash");
+	if (errno == 13)
 		ft_printf("bash: %s: Permission denied\n", s);
-	if (error == -1)
+	else
 		ft_printf("bash: %s: No such file or directory\n", s);
+	if (last)
+		close(args->prev_pipes);
 	close(args->fd[0]);
 	close(args->fd[1]);
 	freestruct(args);

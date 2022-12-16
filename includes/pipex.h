@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 18:45:46 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 20:37:42 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <errno.h>
 # include <fcntl.h>
 # include <signal.h>
+# include <stdio.h>
 # include <sys/fcntl.h>
 # include <sys/stat.h>
 # include <sys/types.h>
@@ -36,6 +37,7 @@ typedef struct s_args
 	int		fd[2];
 	pid_t	pid[1024];
 	int		heredoc;
+	char	*delimiter;
 }			t_args;
 
 /*	PRINT.C				*/

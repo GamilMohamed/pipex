@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 20:10:05 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 20:16:26 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ int	main(int ac, char *av[], char *envp[])
 {
 	t_args	*args;
 
-	if (ac > 5)
+	if (ac != 5)
 		exit(1);
 	if (!envp[0])
 		return (0);

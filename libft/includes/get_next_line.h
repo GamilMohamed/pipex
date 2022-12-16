@@ -5,32 +5,29 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/14 15:20:47 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/04 20:11:16 by mgamil           ###   ########.fr       */
+/*   Created: 2022/09/24 03:35:31 by mohazerr          #+#    #+#             */
+/*   Updated: 2022/12/16 22:09:15 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
+# include <stdlib.h>
+# include <unistd.h>
+
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 1000
+#  define BUFFER_SIZE 4
 # endif
 
-# include <unistd.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <fcntl.h>
+size_t	ft_gnl_strlen(const char *str);
+char	*ft_gnl_strjoin(char const *s1, char const *s2);
+void	*ft_gnl_calloc(size_t n);
+char	*ft_gnl_strchr(char *s, char x);
 
-//get_next_line_utils.c
-size_t	ft_strlen(const char *s);
-int		ft_belongs(const char *set, char s);
-void	ft_reset(char *buff);
-char	*ft_gnl_strjoin(char const *res, char const *buff);
-
-//get_next_line.c
-void	aux(char **res, char *buff);
-char	*one_line(char *buff, int fd);
-char	*get_next_line(int fd);
+char	*get_next_line(int fd, int boolean);
+char	*read_first_line(int fd, char *buffer);
+char	*get_first_line(char *buffer);
+char	*erase_first_line(char *buffer);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/25 21:25:30 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/09 20:38:59 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 20:36:38 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,6 @@ void				ft_lstiter(t_list *lst, void (*f)(void *));
 t_list				*ft_lstmap(t_list *lst, void *(*f)(void *),
 						void (*del)(void *));
 
-char				*get_next_line(int fd);
+char				*get_next_line(int fd, int boolean);
 
 #endif

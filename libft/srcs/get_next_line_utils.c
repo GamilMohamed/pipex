@@ -5,68 +5,68 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/12 21:21:51 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/04 20:09:50 by mgamil           ###   ########.fr       */
+/*   Created: 2022/09/24 03:35:31 by mohazerr          #+#    #+#             */
+/*   Updated: 2022/12/16 22:09:37 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_belongs(const char *set, char s)
+size_t	ft_gnl_strlen(const char *str)
 {
 	int	i;
 
-	if (!set)
-		return (0);
 	i = 0;
-	while (set[i])
-	{
-		if (set[i] == s)
-			return (1);
+	while (str[i])
 		i++;
-	}
-	return (0);
+	return (i);
 }
 
-void	ft_reset(char *buff)
+char	*ft_gnl_strjoin(char const *s1, char const *s2)
 {
-	int	i;
-	int	j;
+	char	*new;
+	int		y;
+	int		x;
 
-	i = 0;
-	j = 0;
-	while (buff[i] && buff[i] != '\n')
-		i++;
-	if (buff[i] == '\n')
-		i++;
-	while (buff[i])
-		buff[j++] = buff[i++];
-	buff[j] = '\0';
+	x = -1;
+	y = -1;
+	if (s1 == 0)
+		return (NULL);
+	new = malloc(ft_gnl_strlen((char *)s1) + ft_gnl_strlen((char *)s2) + 1);
+	if (!new)
+		return (NULL);
+	while (s1[++x])
+		new[x] = s1[x];
+	while (s2[++y])
+		new[x + y] = s2[y];
+	new[x + y] = '\0';
+	return (new);
 }
 
-char	*ft_gnl_strjoin(char const *res, char const *buff)
+void	*ft_gnl_calloc(size_t n)
+{
+	char	*new;
+	size_t	i;
+
+	i = -1;
+	new = malloc(n);
+	if (!new)
+		return (NULL);
+	while (++i < n)
+		new[i] = '\0';
+	return (new);
+}
+
+char	*ft_gnl_strchr(char *s, char x)
 {
 	size_t	i;
-	size_t	j;
-	char	*join;
 
-	if (buff[0] == 0)
-		return (NULL);
-	if (res == NULL)
-		join = malloc(sizeof(*join) * (ft_strlen(buff) + 1));
-	else
-		join = malloc(sizeof(*join) * (ft_strlen(res) + ft_strlen(buff) + 1));
-	if (!join)
-		return (NULL);
 	i = 0;
-	j = 0;
-	while (res && res[i])
-		join[j++] = res[i++];
-	i = 0;
-	while (buff[i] && buff[i] != '\n')
-		join[j++] = buff[i++];
-	if (buff[i] == '\n')
-		join[j++] = '\n';
-	join[j] = '\0';
-	return (join);
+	while (s[i])
+	{
+		if (s[i] == x)
+			return (&s[i]);
+		i++;
+	}
+	return (NULL);
 }
