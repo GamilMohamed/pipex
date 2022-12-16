@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 20:32:41 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 05:41:06 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 20:10:41 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,13 @@ void	checkaccess(char *cmd, int boolean)
 	}
 	else
 	{
-		perror("bashs");
+		perror("bash");
 	}
 }
 
 void	ft_error_exit(char *s, int error, t_args *args, int last)
 {
 	(void)error;
-	(void)s;
-	// perror("bash");
 	if (errno == 13)
 		ft_printf("bash: %s: Permission denied\n", s);
 	else

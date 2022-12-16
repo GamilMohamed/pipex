@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/15 21:38:56 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 19:02:30 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,12 @@ void	init(t_args *args, char **av, int ac)
 {
 	int	i;
 
-	args->nbcmds = 0;
 	i = -1;
+	args->nbcmds = 0;
+	args->prev_pipes = -1;
+	args->av = av;
+	args->ac = ac;
+	args->heredoc = 0000100;
 	while (++i < ac - 3)
 	{
 		args->nbcmds++;

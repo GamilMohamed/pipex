@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 05:47:15 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 20:10:05 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void	exec(t_args *args, int boolean, int index)
 	char	**tab;
 	int		i;
 
-	// ft_printf("index:%i, boolean:%i\n", index, boolean);
 	i = -1;
 	tab = ft_split(args->cmds[index], ' ');
 	while (boolean && args->env[++i])
@@ -52,19 +51,17 @@ void	exec(t_args *args, int boolean, int index)
 		temp = ft_slash(args->env[i], tab[0]);
 		if (access(temp, F_OK | X_OK) != -1)
 			execve(temp, tab, NULL);
-		// ft_printf("temp=%s\n", temp);
-		// if (args->env[i + 1] == NULL)
-		// checkaccess(tab[0], boolean);
 		free(temp);
 	}
 	if (!boolean)
 		if (access(tab[0], F_OK | X_OK))
 			execve(tab[0], tab, NULL);
-	if (access(temp, F_OK | X_OK) == -1 && boolean)
+	if (boolean)
 		ft_printf("%s: command not found\n", tab[0]);
 	else
 		ft_printf("bash: %s: No such file or directory\n", tab[0]);
 	ft_freetab((void **)tab);
+	freestruct(args);
 }
 
 void	forking(t_args *args, int index)
@@ -78,8 +75,8 @@ void	forking(t_args *args, int index)
 	}
 	else if (index == args->nbcmds - 1)
 	{
-		args->out = open(args->av[args->ac - 1], O_WRONLY | O_TRUNC | O_CREAT,
-				0666);
+		args->out = open(args->av[args->ac - 1],
+				O_WRONLY | args->heredoc | O_CREAT, 0666);
 		if (args->out == -1)
 			ft_error_exit(args->av[args->ac - 1], 0, args, 1);
 		dupnclose(args->out, STDOUT_FILENO);
@@ -131,9 +128,6 @@ int	main(int ac, char *av[], char *envp[])
 	args = ft_calloc(sizeof(t_args), 1);
 	if (!args)
 		exit(0);
-	args->prev_pipes = -1;
-	args->av = av;
-	args->ac = ac;
 	ft_getenv(ac, envp, args);
 	init(args, av, ac);
 	preforking(args);
