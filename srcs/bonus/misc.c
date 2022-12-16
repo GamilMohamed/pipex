@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 22:39:43 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 23:36:12 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,23 @@
 int	get_here_doc(t_args *args)
 {
 	char	*s;
-	int		fd;
 
 	s = NULL;
-	fd = open("tmpipex.txt", O_RDWR | O_CREAT, 0644);
-	ft_printf("fd la la la =%i\n", fd);
+	args->heredocfd = open("tmpipex.txt", O_RDWR | O_CREAT, 0644);
 	while (1)
 	{
 		s = get_next_line(0, 0);
 		if (!s || !ft_strcmp(s, args->delimiter))
 			break ;
-		ft_putstr_fd(s, fd);
+		ft_putstr_fd(s, args->heredocfd);
 		free(s);
 	}
 	free(s);
 	get_next_line(0, 1);
-	// close(fd);
-	args->in = fd;
+	close(args->heredocfd);
 	return (0);
 }
+
 void	init(t_args *args, char **av, int ac)
 {
 	int	i;

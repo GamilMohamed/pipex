@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 15:46:50 by mohazerr          #+#    #+#             */
-/*   Updated: 2022/12/16 22:09:25 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 23:38:06 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ char	*get_next_line(int fd, int boolean)
 {
 	static char	*buffer;
 	char		*line;
+
 	if (boolean == 1)
 	{
 		free(buffer);

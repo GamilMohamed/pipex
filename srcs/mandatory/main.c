@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:09:49 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 20:16:26 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 23:37:01 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	exec(t_args *args, int boolean, int index)
 		free(temp);
 	}
 	if (!boolean)
-		if (access(tab[0], F_OK | X_OK))
+		if (access(tab[0], F_OK | X_OK) == 0)
 			execve(tab[0], tab, NULL);
 	if (boolean)
 		ft_printf("%s: command not found\n", tab[0]);
@@ -70,7 +70,7 @@ void	forking(t_args *args, int index)
 	{
 		args->in = open(args->av[1], O_RDONLY);
 		if (args->in == -1)
-			ft_error_exit(args->av[1], 0, args, 0);
+			ft_error_exit(args->av[1], args, 0);
 		dupnclose(args->in, STDIN_FILENO);
 	}
 	else if (index == args->nbcmds - 1)
@@ -78,7 +78,7 @@ void	forking(t_args *args, int index)
 		args->out = open(args->av[args->ac - 1],
 				O_WRONLY | args->heredoc | O_CREAT, 0666);
 		if (args->out == -1)
-			ft_error_exit(args->av[args->ac - 1], 0, args, 1);
+			ft_error_exit(args->av[args->ac - 1], args, 1);
 		dupnclose(args->out, STDOUT_FILENO);
 	}
 	if (index != args->nbcmds - 1)

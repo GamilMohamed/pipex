@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 20:37:42 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/16 23:37:25 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ typedef struct s_args
 	pid_t	pid[1024];
 	int		heredoc;
 	char	*delimiter;
+	int		heredocfd;
 }			t_args;
 
 /*	PRINT.C				*/
@@ -50,7 +51,7 @@ void		wait_pids(t_args *args);
 /*	UTILS.C				*/
 char		*ft_slash(char *path, char *cmd);
 void		dupnclose(int fd, int std);
-void		ft_error_exit(char *s, int error, t_args *args, int last);
+void		ft_error_exit(char *s, t_args *args, int last);
 void		checkaccess(char *cmd, int boolean);
 
 #endif
