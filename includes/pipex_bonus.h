@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/07 05:10:35 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/18 04:27:53 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/18 05:27:58 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_args
 
 /*	MAIN.C				*/
 void		ft_getenv(int ac, char **envp, t_args *args);
+int			get_here_doc(t_args *args);
 /*	FORK.C				*/
 void		exec(t_args *args, int boolean, int index);
 void		forking(t_args *args, int index);

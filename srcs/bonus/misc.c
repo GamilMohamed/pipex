@@ -6,31 +6,11 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/18 04:27:33 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/18 05:28:19 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
-
-int	get_here_doc(t_args *args)
-{
-	char	*s;
-
-	s = NULL;
-	args->heredocfd = open("tmpipex.txt", O_RDWR | O_CREAT, 0644);
-	while (1)
-	{
-		s = get_next_line(0, 0);
-		if (!s || !ft_strcmp(s, args->delimiter))
-			break ;
-		ft_putstr_fd(s, args->heredocfd);
-		free(s);
-	}
-	free(s);
-	get_next_line(0, 1);
-	close(args->heredocfd);
-	return (0);
-}
 
 void	init(t_args *args, char **av, int ac)
 {
@@ -68,7 +48,6 @@ void	dupnclose(int fd, int std)
 	dup2(fd, std);
 	close(fd);
 }
-
 
 void	ft_error_exit(char *s, t_args *args, int last)
 {

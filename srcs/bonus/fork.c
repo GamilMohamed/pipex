@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/18 04:22:08 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/18 04:27:33 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/18 05:24:44 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,8 @@ void	exec(t_args *args, int boolean, int index)
 		free(temp);
 	}
 	if (!boolean)
-	{
 		if (access(tab[0], F_OK | X_OK) == 0)
 			execve(tab[0], tab, NULL);
-	}
 	if (boolean)
 		ft_printf("%s: command not found\n", tab[0]);
 	else if (errno == 13)
