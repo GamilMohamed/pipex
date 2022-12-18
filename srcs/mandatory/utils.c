@@ -6,23 +6,45 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 20:32:41 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 23:37:14 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/18 04:16:21 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
+void	ft_getenv(int ac, char **envp, t_args *args)
+{
+	int	i;
+
+	i = -1;
+	while (envp[++i])
+	{
+		if (!ft_strncmp(envp[i], "PATH=", 5))
+		{
+			args->env = ft_split(envp[i], ':');
+			if (!args->env)
+			{
+				free(args);
+				exit(1);
+			}
+		}
+	}
+	args->cmds = ft_calloc(sizeof(char *), ac - 2);
+	if (!args->cmds)
+	{
+		free(args);
+		ft_freetab((void **)args->env);
+		exit(1);
+	}
+}
+
 char	*ft_slash(char *path, char *cmd)
 {
-	size_t	pathlen;
-	size_t	cmdlen;
 	char	*var;
 	size_t	i;
 	size_t	x;
 
-	pathlen = ft_strlen(path);
-	cmdlen = ft_strlen(cmd);
-	var = ft_calloc(pathlen + cmdlen + 2, 1);
+	var = ft_calloc(ft_strlen(path) + ft_strlen(cmd) + 2, 1);
 	if (!var)
 		return (NULL);
 	i = -1;
@@ -36,41 +58,12 @@ char	*ft_slash(char *path, char *cmd)
 	return (var);
 }
 
-void	dupnclose(int fd, int std)
-{
-	dup2(fd, std);
-	close(fd);
-}
-
 void	checkaccess(char *cmd, int boolean)
 {
 	ft_printf("cmd=%s\n", cmd);
 	if (access(cmd, F_OK) != 0 && boolean == 1)
-	{
 		ft_printf("%s: No such command\n", cmd);
-		return ;
-	}
 	else if (access(cmd, F_OK) != 0 && boolean == 0)
-	{
 		ft_printf("bash: %s: No such file or directory\n", cmd);
-		return ;
-	}
-	else
-	{
-		perror("bash");
-	}
-}
-
-void	ft_error_exit(char *s, t_args *args, int last)
-{
-	if (errno == 13)
-		ft_printf("bash: %s: Permission denied\n", s);
-	else
-		ft_printf("bash: %s: No such file or directory\n", s);
-	if (last)
-		close(args->prev_pipes);
-	close(args->fd[0]);
-	close(args->fd[1]);
-	freestruct(args);
-	exit(1);
+	return ;
 }

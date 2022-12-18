@@ -6,7 +6,7 @@
 /*   By: mgamil <mgamil@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/09 17:30:42 by mgamil            #+#    #+#             */
-/*   Updated: 2022/12/16 20:14:44 by mgamil           ###   ########.fr       */
+/*   Updated: 2022/12/18 04:19:13 by mgamil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,12 @@
 
 void	init(t_args *args, char **av, int ac)
 {
-	int	i;
-
-	i = -1;
 	args->nbcmds = 0;
 	args->prev_pipes = -1;
 	args->av = av;
 	args->ac = ac;
-	args->heredoc = 0000100;
-	while (++i < ac - 3)
-	{
-		args->nbcmds++;
-		args->cmds[i] = av[i + 2];
-	}
-	args->cmds[i] = NULL;
+	while (args->nbcmds < ac - 3)
+		args->cmds[args->nbcmds++] = av[args->nbcmds + 2];
 }
 
 int	freestruct(t_args *args)
@@ -38,19 +30,24 @@ int	freestruct(t_args *args)
 	exit(1);
 }
 
-void	ft_freestr(int n, int ntab, ...)
+void	dupnclose(int fd, int std)
 {
-	va_list	str;
-	int		i;
+	dup2(fd, std);
+	close(fd);
+}
 
-	va_start(str, ntab);
-	i = -1;
-	while (++i < n)
-		free(va_arg(str, void *));
-	i = -1;
-	while (++i < ntab)
-		ft_freetab((void **)va_arg(str, void **));
-	va_end(str);
+void	ft_error_exit(char *s, t_args *args, int last)
+{
+	if (errno == 13)
+		ft_printf("bash: %s: Permission denied\n", s);
+	else
+		ft_printf("bash: %s: No such file or directory\n", s);
+	if (last)
+		close(args->prev_pipes);
+	close(args->fd[0]);
+	close(args->fd[1]);
+	freestruct(args);
+	exit(1);
 }
 
 void	wait_pids(t_args *args)

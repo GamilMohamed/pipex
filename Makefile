@@ -8,9 +8,9 @@ DIR_BONUS		=	srcs/bonus
 
 DIR_OBJS		=	objs
 
-SRCS_NAMES		=	main.c  misc.c  print.c  utils.c
+SRCS_NAMES		=	main.c  misc.c  fork.c  utils.c
 
-SRCS_NAMES_B	=	main.c  misc.c  print.c  utils.c
+SRCS_NAMES_B	=	main.c  misc.c	fork.c 	utils.c
 
 OBJS_NAMES		=	${SRCS_NAMES:.c=.o}
 
@@ -22,7 +22,7 @@ SRCS_B			=	$(addprefix $(DIR_BONUS)/,$(SRCS_NAMES_B))
 
 OBJS			=	$(addprefix $(DIR_OBJS)/,$(OBJS_NAMES))
 
-HEAD			=	-Iincludes/ -Ilibft/includes
+HEAD			=	-Ilibft/includes -Iincludes
 
 CC				=	cc
 
